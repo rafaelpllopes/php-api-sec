@@ -9,8 +9,11 @@ use Alura\Mvc\Controller\{
     Error404Controller,
     NewVideoController,
     VideoFormController,
-    VideoListController
+    VideoListController,
+    LoginController,
+    LoginFormController
 };
+use Alura\Mvc\Repository\UserRepository;
 use Alura\Mvc\Repository\VideoRepository;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -18,17 +21,23 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dbPath = __DIR__ . '/../banco.sqlite';
 $pdo = new PDO("sqlite:$dbPath");
 $videoRepository = new VideoRepository($pdo);
+$userRepository = new UserRepository($pdo);
 
 $routes = require_once __DIR__ . '/../config/routes.php';
 
 $pathInfo = $_SERVER['PATH_INFO'] ?? '/';
 $httpMethod = $_SERVER['REQUEST_METHOD'];
 
+$controllerOpcRepository = match ($pathInfo) {
+    '/login' => $userRepository,
+    default => $videoRepository
+};
+
 $key = "$httpMethod|$pathInfo";
 if (array_key_exists($key, $routes)) {
     $controllerClass = $routes["$httpMethod|$pathInfo"];
-
-    $controller = new $controllerClass($videoRepository);
+    
+    $controller = new $controllerClass($controllerOpcRepository);
 } else {
     $controller = new Error404Controller();
 }

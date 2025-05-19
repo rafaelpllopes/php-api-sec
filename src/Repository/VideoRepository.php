@@ -79,6 +79,7 @@ class VideoRepository
         
         if ($video->getFilePath() !== null) {
             $statement->bindValue(':image_path', $video->getFilePath());
+            $this->removeCape($video->id);
         }
 
         return $statement->execute();

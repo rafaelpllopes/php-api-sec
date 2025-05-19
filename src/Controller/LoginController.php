@@ -35,12 +35,15 @@ class LoginController implements Controller
             return;
         }
 
-
         $correctPassword = password_verify($password, $login->password ?? '');
-
+        
         if (!$correctPassword) {
             header('Location: /login?sucesso=0');
             return;
+        }
+        
+        if (password_needs_rehash($login->password, PASSWORD_ARGON2ID)) {
+            $this->userRepository->updatePassword($password, $login->id);
         }
         
         $_SESSION['logado'] = true;

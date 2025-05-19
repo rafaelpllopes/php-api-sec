@@ -34,7 +34,16 @@ $controllerOpcRepository = match ($pathInfo) {
     default => $videoRepository
 };
 
+session_set_cookie_params([
+    'lifetime' => 3600,
+    'path'     => $cookieParams['path'],
+    'domain'   => $cookieParams['domain'],
+    'secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
 session_start();
+session_regenerate_id();
 $isLoginRoute = $pathInfo === '/login';
 if (!array_key_exists('logado', $_SESSION) && !$isLoginRoute) {
     header('Location: /login');

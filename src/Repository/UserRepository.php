@@ -47,8 +47,21 @@ class UserRepository
         $hash = password_hash($user->password, PASSWORD_ARGON2ID);
 
         $statement->bindValue(':url', $user->email);
-        $statement->bindValue(':title', $hash);
+        $statement->bindValue(':password', $hash);
         $statement->bindValue(':id', $user->id, PDO::PARAM_INT);
+
+        return $statement->execute();
+    }
+
+    public function updatePassword(string $password, int $id): bool
+    {
+        $sql = 'UPDATE users SET password = :password WHERE id = :id;';
+        $statement = $this->pdo->prepare($sql);
+
+        $hash = password_hash($password, PASSWORD_ARGON2ID);
+
+        $statement->bindValue(':password', $hash);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
 
         return $statement->execute();
     }

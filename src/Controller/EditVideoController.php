@@ -6,9 +6,12 @@ namespace Alura\Mvc\Controller;
 
 use Alura\Mvc\Entity\Video;
 use Alura\Mvc\Repository\VideoRepository;
+use Alura\Mvc\Trait\SaveFile;
 
 class EditVideoController implements Controller
 {
+    use SaveFile;
+
     public function __construct(private VideoRepository $videoRepository)
     {
     }
@@ -34,6 +37,8 @@ class EditVideoController implements Controller
 
         $video = new Video($url, $titulo);
         $video->setId($id);
+
+        $this->saveFile($video);
 
         $success = $this->videoRepository->update($video);
 

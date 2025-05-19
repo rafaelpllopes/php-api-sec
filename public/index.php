@@ -30,8 +30,16 @@ $httpMethod = $_SERVER['REQUEST_METHOD'];
 
 $controllerOpcRepository = match ($pathInfo) {
     '/login' => $userRepository,
+    '/logout' => '',
     default => $videoRepository
 };
+
+session_start();
+$isLoginRoute = $pathInfo === '/login';
+if (!array_key_exists('logado', $_SESSION) && !$isLoginRoute) {
+    header('Location: /login');
+    return;
+}
 
 $key = "$httpMethod|$pathInfo";
 if (array_key_exists($key, $routes)) {

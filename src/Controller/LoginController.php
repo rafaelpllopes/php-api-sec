@@ -42,7 +42,8 @@ class LoginController implements Controller
             header('Location: /login?sucesso=0');
             return;
         }
-
+        
+        $_SESSION['logado'] = true;
         header('Location: /');
     }
 }

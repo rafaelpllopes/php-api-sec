@@ -12,5 +12,7 @@ return [
     'GET|/remover-capa' => \Alura\Mvc\Controller\RemoverCapaController::class,
     'GET|/login' => \Alura\Mvc\Controller\LoginFormController::class,
     'POST|/login' => \Alura\Mvc\Controller\LoginController::class,
-    'GET|/logout' => \Alura\Mvc\Controller\LogoutController::class
+    'GET|/logout' => \Alura\Mvc\Controller\LogoutController::class,
+    'GET|/videos-json' => \Alura\Mvc\Controller\JsonVideosListController::class,
+    'POST|/videos' => \Alura\Mvc\Controller\JsonVideosListController::class
 ];

@@ -8,8 +8,12 @@ use Alura\Mvc\Entity\Video;
 use Alura\Mvc\Repository\VideoRepository;
 use Alura\Mvc\Trait\FlashMessageTrait;
 use Alura\Mvc\Trait\SaveFile;
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class EditVideoController implements Controller
+class EditVideoController implements RequestHandlerInterface
 {
     use SaveFile, FlashMessageTrait;
 
@@ -17,41 +21,52 @@ class EditVideoController implements Controller
     {
     }
 
-    public function processaRequisicao(): void
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $id = $request->getQueryParams()['id'];
+
+        $queryParams = $request->getParsedBody();
+        $url = filter_var($queryParams['url'], FILTER_VALIDATE_URL);
+        $titulo = filter_var($queryParams['titulo']);
+        
+        $id = filter_var($id, FILTER_VALIDATE_INT);
         if ($id === false || $id === null) {
             $this->sendError('ID inválida');
-            header('Location: /editar-video');
-            return;
+            return new Response(400, [
+                'Location' => '/editar-video?id=' . $id
+            ]);
         }
 
-        $url = filter_input(INPUT_POST, 'url', FILTER_VALIDATE_URL);
         if ($url === false) {
             $this->sendError('URL inválida');
-            header('Location: /editar-video');
-            return;
+            return new Response(400, [
+                'Location' => '/editar-video'
+            ]);
         }
-        $titulo = filter_input(INPUT_POST, 'titulo');
         if ($titulo === false) {
             $this->sendError('Titulo não informado');
-            header('Location: /editar-video');
-            return;
+            return new Response(400, [
+                'Location' => '/editar-video'
+            ]);
         }
 
         $video = new Video($url, $titulo);
         $video->setId($id);
 
-        $this->saveFile($video);
+        $this->saveFile($video, $request);
 
         $success = $this->videoRepository->update($video);
 
         if ($success === false) {
             $this->sendError('Erro ao salvar o video');
-            header('Location: /editar-video');
+            return new Response(400, [
+                'Location' => '/editar-video'
+            ]);
         } else {
             $this->sendError('Vídeo salvo com sucesso');
-            header('Location: /');
+            return new Response(302, [
+                'Location' => '/'
+            ]);
         }
     }
 }

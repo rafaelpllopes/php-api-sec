@@ -6,8 +6,12 @@ namespace Alura\Mvc\Controller;
 
 use Alura\Mvc\Repository\VideoRepository;
 use Alura\Mvc\Trait\FlashMessageTrait;
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class RemoverCapaController implements Controller
+class RemoverCapaController implements RequestHandlerInterface
 {
     use FlashMessageTrait;
 
@@ -15,22 +19,30 @@ class RemoverCapaController implements Controller
     {
     }
 
-    public function processaRequisicao(): void
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $queryParams = $request->getQueryParams();
+        
+        $id = filter_var($queryParams['id'], FILTER_VALIDATE_INT);
         if ($id === null || $id === false) {
             $this->sendError('ID inválida');
             header('Location: /');
-            return;
+            return new Response(400, [
+                'Location' => '/'
+            ]);
         }
 
         $success = $this->videoRepository->removeCape($id);
         if ($success === false) {
             $this->sendError('Erro ao remover a capa');
-            header('Location: /');
+            return new Response(400, [
+                'Location' => '/'
+            ]);
         } else {
             $this->sendError('Capa removida com sucesso');
-            header('Location: /');
+            return new Response(200, [
+                'Location' => '/'
+            ]);
         }
 
     }

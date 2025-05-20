@@ -3,26 +3,33 @@
 namespace Alura\Mvc\Trait;
 
 use Alura\Mvc\Entity\Video;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 trait SaveFile
 {
-    public function saveFile(Video $video) : void {
+    public function saveFile(Video $video, ServerRequestInterface $request) : void {
 
-        if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $files = $request->getUploadedFiles();
+        /**
+        * @var UploadedFileInterface $uploadedImage
+        */
+        $uploadedImage = $files['image'];
+
+        if ($uploadedImage->getError() === UPLOAD_ERR_OK) {
                 
-            $originalNameSafe = pathinfo($_FILES['image']['name'], PATHINFO_BASENAME);
+            $originalNameSafe = pathinfo($uploadedImage->getClientFilename(), PATHINFO_BASENAME);
 
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $mimeType = $finfo->file($_FILES['image']['tmp_name']);
+            $tmpFile = $uploadedImage->getStream()->getMetadata('uri');
+            $mimeType = $finfo->file($tmpFile);
 
             if (str_starts_with($mimeType, 'image/')) {
                 $extension = pathinfo($originalNameSafe, PATHINFO_EXTENSION);
                 $imageName = uniqid('upload_', true) . '.' . $extension;
+
+                $uploadedImage->moveTo(__DIR__ . '/../../public/img/uploads/' . $imageName);
         
-                move_uploaded_file(
-                    $_FILES['image']['tmp_name'],
-                    __DIR__ . '/../../public/img/uploads/' . $imageName
-                );
                 /**
                  * @var Video $video
                  */

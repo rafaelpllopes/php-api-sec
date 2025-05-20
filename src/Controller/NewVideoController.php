@@ -8,8 +8,12 @@ use Alura\Mvc\Entity\Video;
 use Alura\Mvc\Repository\VideoRepository;
 use Alura\Mvc\Trait\FlashMessageTrait;
 use Alura\Mvc\Trait\SaveFile;
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class NewVideoController implements Controller
+class NewVideoController implements RequestHandlerInterface
 {
     use SaveFile, FlashMessageTrait;
 
@@ -17,33 +21,41 @@ class NewVideoController implements Controller
     {
     }
 
-    public function processaRequisicao(): void
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $url = filter_input(INPUT_POST, 'url', FILTER_VALIDATE_URL);
+        $queryParams = $request->getParsedBody();
+        $url = filter_var($queryParams['url'], FILTER_VALIDATE_URL);
+        $titulo = filter_var($queryParams['titulo']);
+
         if ($url === false) {
             $this->sendError('URL inválida');
-            header('Location: /novo-video');
-            return;
+            return new Response(400, [
+                'Location' => '/novo-video'
+            ]);
         }
 
-        $titulo = filter_input(INPUT_POST, 'titulo');
         if ($titulo === false) {
             $this->sendError('Título não informado');
-            header('Location: /novo-video');
-            return;
+            return new Response(400, [
+                'Location' => '/novo-video'
+            ]);
         }
 
         $video = new Video($url, $titulo);
 
-        $this->saveFile($video);
+        $this->saveFile($video, $request);
 
         $success = $this->videoRepository->add($video);
         if ($success === false) {
             $this->sendError('Erro ao salvar o vídeo');
-            header('Location: /novo-video');
+            return new Response(400, [
+                'Location' => '/novo-video'
+            ]);
         } else {
             $this->sendError('Vídeo salvo com sucesso');
-            header('Location: /');
+            return new Response(302, [
+                'Location' => '/'
+            ]);
         }
     }
 }

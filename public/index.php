@@ -15,6 +15,8 @@ use Alura\Mvc\Controller\{
 };
 use Alura\Mvc\Repository\UserRepository;
 use Alura\Mvc\Repository\VideoRepository;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7Server\ServerRequestCreator;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -44,6 +46,7 @@ session_set_cookie_params([
 ]);
 session_start();
 session_regenerate_id();
+
 $isLoginRoute = $pathInfo === '/login';
 if (!array_key_exists('logado', $_SESSION) && !$isLoginRoute) {
     header('Location: /login');
@@ -58,5 +61,26 @@ if (array_key_exists($key, $routes)) {
 } else {
     $controller = new Error404Controller();
 }
-/** @var Controller $controller */
-$controller->processaRequisicao();
+
+$psr17Factory = new Psr17Factory();
+
+$creator = new ServerRequestCreator(
+    $psr17Factory, // ServerRequestFactory
+    $psr17Factory, // UriFactory
+    $psr17Factory, // UploadedFileFactory
+    $psr17Factory,  // StreamFactory
+);
+
+$request = $creator->fromGlobals();
+
+/** @var \Psr\Http\Server\RequestHandlerInterface $controller */
+$response = $controller->handle($request);
+
+http_response_code($response->getStatusCode());
+foreach ($response->getHeaders() as $name => $values) {
+    foreach ($values as $value) {
+        header(sprintf('%s: %s', $name, $value), false);
+    }
+}
+
+echo $response->getBody();

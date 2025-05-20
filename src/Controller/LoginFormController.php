@@ -4,10 +4,10 @@ namespace Alura\Mvc\Controller;
 
 use Alura\Mvc\Repository\UserRepository;
 
-class LoginFormController implements Controller
+class LoginFormController extends ControleWithHtml implements Controller
 {
     public function __construct(private UserRepository $userRepository)
-    {  
+    {
     }
 
     #[\Override]
@@ -19,6 +19,6 @@ class LoginFormController implements Controller
             return;
         }
 
-        require_once __DIR__ . '/../../views/login-form.php';
+        echo $this->renderTemplate('login-form');
     }
 }

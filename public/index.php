@@ -26,6 +26,7 @@ $videoRepository = new VideoRepository($pdo);
 $userRepository = new UserRepository($pdo);
 
 $routes = require_once __DIR__ . '/../config/routes.php';
+// $diContainer = require_once __DIR__ . '/../dependencies.php';
 
 $pathInfo = $_SERVER['PATH_INFO'] ?? '/';
 $httpMethod = $_SERVER['REQUEST_METHOD'];
@@ -61,6 +62,14 @@ if (array_key_exists($key, $routes)) {
 } else {
     $controller = new Error404Controller();
 }
+
+// if (array_key_exists($key, $routes)) {
+//     $controllerClass = $routes["$httpMethod|$pathInfo"];
+
+//     $controller = $diContainer->get($controllerClass);
+// } else {
+//     $controller = new Error404Controller();
+// }
 
 $psr17Factory = new Psr17Factory();
 

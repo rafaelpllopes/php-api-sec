@@ -2,10 +2,10 @@
 *::before,
 *::after {
     --azul-escuro: #154580;
-    --azul-medio: #3970BE;
-    --azul-claro: #E5F1FF;
+    --azul-medio: #3970be;
+    --azul-claro: #e5f1ff;
     --cinza-texto: #444444;
-    --cinza-claro: #ECECEC;
+    --cinza-claro: #ececec;
     box-sizing: border-box;
 }
 
@@ -24,6 +24,10 @@ body {
 
 /* ESTILOS DO HEADER */
 
+body > header {
+    height: 80px;
+}
+
 .cabecalho {
     background-color: white;
     position: fixed;
@@ -41,7 +45,6 @@ body {
     cursor: pointer;
 }
 
-
 .cabecalho__videos {
     background-image: url(../img/cabecalho/video_call.png);
     background-size: contain;
@@ -55,7 +58,6 @@ body {
     padding: 5px 10px;
     border-radius: 10%;
     background-color: var(--azul-escuro);
-
 }
 
 /* ESTILOS DA SEÇÃO VÍDEOS */
@@ -96,16 +98,19 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     border: 1px solid rgb(211, 211, 211);
-    background-color: #F9F9F9;
+    background-color: #f9f9f9;
     border-left: none;
     padding: 15px 15px;
     cursor: pointer;
 }
 
-@media(min-width: 834px) {
-
+@media (min-width: 834px) {
     body {
         height: 100vh;
     }
+}
 
+.formulario__titulo.erro {
+    color: red;
+    margin-top: 1rem;
 }

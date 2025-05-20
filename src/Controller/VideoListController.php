@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Alura\Mvc\Controller;
 
 use Alura\Mvc\Repository\VideoRepository;
+use Alura\Mvc\Trait\HtmlRenderTrait;
 
-class VideoListController extends ControleWithHtml implements Controller
+class VideoListController implements Controller
 {
+    use HtmlRenderTrait;
+
     public function __construct(private VideoRepository $videoRepository)
     {
     }

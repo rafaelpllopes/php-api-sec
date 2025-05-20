@@ -3,9 +3,12 @@
 namespace Alura\Mvc\Controller;
 
 use Alura\Mvc\Repository\UserRepository;
+use Alura\Mvc\Trait\FlashMessageTrait;
 
 class LoginController implements Controller
 {
+    use FlashMessageTrait;
+
     public function __construct(
         private UserRepository $userRepository
     )
@@ -19,26 +22,30 @@ class LoginController implements Controller
         $password = filter_input(INPUT_POST, 'password');
 
         if ($email === false || $email === null) {
-            header('Location: /login?sucesso=0');
+            $this->sendError("Usuário ou senha inválidos");
+            header('Location: /login');
             return;
         }
         
         if ($password === false || $password === null) {
-            header('Location: /login?sucesso=0');
+            $this->sendError("Usuário ou senha inválidos");
+            header('Location: /login');
             return;
         }
         
         $login = $this->userRepository->login($email);
 
         if ($login === null) {
-            header('Location: /login?sucesso=0');
+            $this->sendError("Usuário ou senha inválidos");
+            header('Location: /login');
             return;
         }
 
         $correctPassword = password_verify($password, $login->password ?? '');
         
         if (!$correctPassword) {
-            header('Location: /login?sucesso=0');
+            $this->sendError("Usuário ou senha inválidos");
+            header('Location: /login');
             return;
         }
         

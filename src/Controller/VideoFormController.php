@@ -6,9 +6,12 @@ namespace Alura\Mvc\Controller;
 
 use Alura\Mvc\Entity\Video;
 use Alura\Mvc\Repository\VideoRepository;
+use Alura\Mvc\Trait\HtmlRenderTrait;
 
-class VideoFormController extends ControleWithHtml implements Controller
+class VideoFormController implements Controller
 {
+    use HtmlRenderTrait;
+
     public function __construct(private VideoRepository $repository)
     {
     }

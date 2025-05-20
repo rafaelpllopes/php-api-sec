@@ -3,9 +3,12 @@
 namespace Alura\Mvc\Controller;
 
 use Alura\Mvc\Repository\UserRepository;
+use Alura\Mvc\Trait\HtmlRenderTrait;
 
-class LoginFormController extends ControleWithHtml implements Controller
+class LoginFormController implements Controller
 {
+    use HtmlRenderTrait;
+
     public function __construct(private UserRepository $userRepository)
     {
     }
